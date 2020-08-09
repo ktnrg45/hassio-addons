@@ -9,10 +9,10 @@ This add-on automatically checks if your Route 53 DNS record is up to date by
 updating the public IP Address to your currently assigned IP address to prevent
 such outages.
 
-This add-on is very similar to the AWS integration in Home-Assistant. There are
-a few differences. The dependencies of this add-on are all AWS maintained.
+This add-on is very similar to the [AWS Route53 integration](https://www.home-assistant.io/integrations/route53/)
+in Home-Assistant core. There are a few differences. The dependencies of this add-on are all AWS maintained.
 The add-on uses the AWS SDK [boto3](https://github.com/boto/boto3) package and checks your public IP address
-using https://checkip.amazonaws.com
+using the [AWS checkip endpoint](https://checkip.amazonaws.com).
 The add-on acts as a separate service from Home-Assistant and is not dependent
 on Home-Assistant Core.
 
@@ -23,7 +23,8 @@ comparison to installing any other Home Assistant add-on.
 
 There is further configuration to be completed on AWS.
 
-A pre-requisite is having a current A record configured for your domain in Route 53.
+A pre-requisite is having a current A record configured for your domain in
+a Route 53 hosted zone.
 
 It is recommended that your create a user specifically for this add-on.
 You will need to grant the user permissions to Route 53 in IAM policies.
@@ -62,7 +63,9 @@ Example add-on configuration:
 aws_access_key_id: ABC123ABC123
 aws_secret_access_key: ABC123ABC123
 zone_id: ABC123ABC123
-domain_url: example.com
+domain_urls:
+ - example.com
+ - example.example.com
 interval: 180
 log_level: info
 ```
@@ -81,13 +84,13 @@ The programatic secret access key for your AWS account. Available in the IAM ser
 
 The zone id of your hosted zone. Avalible in the Route 53 service.
 
-### Option: `domain_url`
+### Option: `domain_urls`
 
-The domain url that should point to your server/instance. Available in the Route 53 Service.
+The domain urls to update. Available in the Route 53 Service.
 
 ### Option: `interval`
 
-The interval in seconds the add-on will check your public IP address against your AWS DNS A record.
+The interval in seconds the add-on will check your public IP address against your DNS records.
 
 ### Option: `log_level`
 

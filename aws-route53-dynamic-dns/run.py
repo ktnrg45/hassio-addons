@@ -17,18 +17,11 @@ LOG_LEVELS = {
     "critical": logging.CRITICAL,
 }
 
-logging.basicConfig(
-    format='%(asctime)s %(levelname)-8s %(message)s',
-    level=logging.INFO,
-    datefmt='%Y-%m-%d %H:%M:%S',
-)
-_LOGGER = logging.getLogger(__name__)
-
 CHECK_IP_URL = "https://checkip.amazonaws.com"
 
 
-def change_record(data, new_ip_address, current_ip_address):
-    """Update A record with new IP Address."""
+def change_record(data: dict, new_ip_address: str, current_ip_address: str):
+    """Update A-Record with new IP Address."""
     _LOGGER.info("Updating DNS Record")
 
     try:
@@ -51,8 +44,10 @@ def change_record(data, new_ip_address, current_ip_address):
 
     _LOGGER.info("Client connected to AWS")
     record_sets = response["ResourceRecordSets"]
+    a_record = None
+    domain_url = [data['domain_url'], "{}.".format(data['domain_url'])]
     for record_set in record_sets:
-        if record_set['Name'] == data['domain_url'] and record_set['Type'] == "A":
+        if record_set['Name'] in domain_url and record_set['Type'] == "A":
             a_record = record_set
             break
     if a_record is None:
@@ -66,7 +61,7 @@ def change_record(data, new_ip_address, current_ip_address):
         _LOGGER.error("Record Value Mismatch")
         return False
 
-    _LOGGER.info("Current A Record Values: %s", str(resource_values))
+    _LOGGER.info("Current A-Record Values: %s", str(resource_values))
 
     new_record_set = {
         'Name': data['domain_url'],
@@ -111,33 +106,45 @@ def change_record(data, new_ip_address, current_ip_address):
     return True
 
 
-def check_external_ip(current_ip_address):
+def check_external_ip(current_ip_address: str):
     """Checks if external IP has changed."""
     ip_address = requests.get(CHECK_IP_URL).text.strip()
-    _LOGGER.debug("IP Address=%s; A Record=%s", ip_address, current_ip_address)
+    _LOGGER.debug("IP Address=%s; A-Record=%s", ip_address, current_ip_address)
     if ip_address != current_ip_address:
         _LOGGER.info("External IP Address has changed to: %s", ip_address)
         return ip_address
     return None
 
 
+def validate_record(data: dict):
+    """Validate and Update DNS record."""
+    _LOGGER.debug("Validating DNS Record for %s", data['domain_url'])
+    new_ip_address = None
+    try:
+        current_ip_address = socket.gethostbyname(data['domain_url'])
+    except socket.gaierror as e:
+        _LOGGER.error("Error resolving hostname: %s", e)
+    else:
+        new_ip_address = check_external_ip(current_ip_address)
+    if new_ip_address is not None:
+        success = change_record(data, new_ip_address, current_ip_address)
+        if success:
+            _LOGGER.info("Record Update Successful")
+        else:
+            _LOGGER.error("Record Update Failed")
+    else:
+        _LOGGER.debug("DNS Record is up-to-date")
+
+
 def start(data: dict):
     """Start process."""
-    _LOGGER.info("Checking DNS Record in %s second intervals", data['interval'])
+    _LOGGER.info("Checking DNS Records in %s second intervals", data['interval'])
 
     while True:
-        _LOGGER.debug("Validating DNS Record")
-        current_ip_address = socket.gethostbyname(data['domain_url'])
-        new_ip_address = check_external_ip(current_ip_address)
-        if new_ip_address is not None:
-            success = change_record(data, new_ip_address, current_ip_address)
-            if success:
-                _LOGGER.info("Record Update Successful")
-            else:
-                _LOGGER.error("Record Update Failed. Exiting...")
-                sys.exit()
-        else:
-            _LOGGER.debug("DNS Record is up-to-date")
+        for domain_url in data['domain_urls']:
+            _data = data
+            _data['domain_url'] = domain_url
+            validate_record(_data)
         time.sleep(data['interval'])
 
 
@@ -145,7 +152,7 @@ parser = argparse.ArgumentParser(description='Dynamically update Route 53 DNS Re
 parser.add_argument('id', type=str, help='AWS ID')
 parser.add_argument('key', type=str, help='AWS Key')
 parser.add_argument('zone_id', type=str, help='AWS Route 53 Zone ID')
-parser.add_argument('domain_url', type=str, help='Domain URL')
+parser.add_argument('domain_urls', type=str, help='Domain URLs')
 parser.add_argument('--interval', type=int, default=180, help='Interval in seconds to run checks')
 parser.add_argument('--log-level', type=str, default='info', help='Log level to use')
 
@@ -155,12 +162,19 @@ data = {
     'id': args.id,
     'key': args.key,
     'zone_id': args.zone_id,
-    'domain_url': args.domain_url,
+    'domain_urls': args.domain_urls.split(','),
     'interval': args.interval,
 }
 
 log_level = args.log_level.lower()
-if log_level in LOG_LEVELS:
-    _LOGGER.setLevel(LOG_LEVELS[log_level])
+if log_level not in LOG_LEVELS:
+    log_level = 'info'
+logging.basicConfig(
+    format='%(asctime)s %(levelname)-8s %(message)s',
+    level=LOG_LEVELS[log_level],
+    datefmt='%Y-%m-%d %H:%M:%S',
+)
+_LOGGER = logging.getLogger(__name__)
+_LOGGER.info("Using log level: %s", log_level)
 
 start(data)

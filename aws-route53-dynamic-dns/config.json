@@ -1,6 +1,6 @@
 {
   "name": "AWS Route 53 Dynamic DNS",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "slug": "aws_route53_dynamic_dns",
   "description": "Dynamic DNS for AWS Route 53 hosted domains",
   "url": "https://github.com/ktnrg45/hassio-addons/tree/master/aws-route53-dynamic-dns",
@@ -11,7 +11,7 @@
     "aws_access_key_id": "",
     "aws_secret_access_key": "",
     "zone_id": "",
-    "domain_url": "",
+    "domain_urls": [],
     "interval": 180,
     "log_level": "info"
   },
@@ -19,7 +19,7 @@
     "aws_access_key_id": "str",
     "aws_secret_access_key": "str",
     "zone_id": "str",
-    "domain_url": "str",
+    "domain_urls": ["str"],
     "interval": "int",
     "log_level": "str"
   }
