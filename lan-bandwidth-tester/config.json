@@ -1,6 +1,6 @@
 {
   "name": "LAN Bandwidth Tester",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "slug": "lan_bandwidth_tester",
   "description": "Test bandwith between a device and your HA server",
   "url": "https://github.com/ktnrg45/hassio-addons/tree/master/lan-bandwidth-tester",
