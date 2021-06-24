@@ -172,6 +172,7 @@ def start(data: dict):
                 if result[0] and len(result) == 4:
                     results.append(result)
         wait_for_results(results)
+        results = []
         time.sleep(data['interval'])
 
 
