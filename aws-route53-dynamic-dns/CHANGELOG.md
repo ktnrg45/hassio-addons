@@ -1,2 +1,3 @@
+- 1.1.0: [BREAKING CHANGE] Add support for multiple zones and accounts. Requires configuration change
 - 1.0.1: Add support for multiple domains
 - 1.0.0: Initial Commit

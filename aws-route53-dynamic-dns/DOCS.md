@@ -60,12 +60,24 @@ An example of such permissions:
 Example add-on configuration:
 
 ```yaml
-aws_access_key_id: ABC123ABC123
-aws_secret_access_key: ABC123ABC123
-zone_id: ABC123ABC123
-domain_urls:
- - example.com
- - example.example.com
+
+accounts:
+  - aws_access_key_id: access_key1
+    aws_secret_access_key: secret1
+    zone_ids:
+      - zoneid1
+      - zoneid2
+    domain_urls:
+      - example.com
+      - example.example.com
+  - aws_access_key_id: access_key2
+    aws_secret_access_key: secret2
+    zone_ids:
+      - zoneid3
+      - zoneid4
+    domain_urls:
+      - example2.com
+      - example.example2.com
 interval: 180
 log_level: info
 ```
@@ -80,7 +92,7 @@ The programatic access key id for your AWS account. Available in the IAM service
 
 The programatic secret access key for your AWS account. Available in the IAM service.
 
-### Option: `zone_id`
+### Option: `zone_ids`
 
 The zone id of your hosted zone. Avalible in the Route 53 service.
 
