@@ -1,3 +1,4 @@
+- 1.1.2: Install boto3 in venv. Fixes build
 - 1.1.1: Fix unnecessary status checking
 - 1.1.0: [BREAKING CHANGE] Add support for multiple zones and accounts. Requires configuration change
 - 1.0.1: Add support for multiple domains

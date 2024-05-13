@@ -7,7 +7,8 @@ ENV LANG C.UTF-8
 COPY run.sh /
 COPY run.py /
 RUN apk add --no-cache python3 py3-pip \
-	&& pip3 install boto3 \
+	&& python3 -m venv /venv \
+	&& /venv/bin/python3 -m pip install boto3 \
 	&& chmod a+x /run.sh
 
 CMD [ "/run.sh" ]
