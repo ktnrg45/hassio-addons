@@ -1,3 +1,4 @@
+- 1.1.3: Fixes for s6 V3
 - 1.1.2: Install boto3 in venv. Fixes build
 - 1.1.1: Fix unnecessary status checking
 - 1.1.0: [BREAKING CHANGE] Add support for multiple zones and accounts. Requires configuration change
