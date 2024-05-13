@@ -1,3 +1,4 @@
+- 1.1.4: Install requests
 - 1.1.3: Fixes for s6 V3
 - 1.1.2: Install boto3 in venv. Fixes build
 - 1.1.1: Fix unnecessary status checking
